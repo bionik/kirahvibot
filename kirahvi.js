@@ -4,7 +4,7 @@ var config = {
   channels: ['#kirahvi.dy.fi'],
   server: 'irc.quakenet.org',
   botName: 'kirahvi',
-  wunderground_api_key: '69c0d907f31cc084',
+  openweathermap_api_key: 'fde182bcfdbc18c908de165c3bb04997'
 };
 
 //Load libraries
@@ -110,16 +110,16 @@ Bot = function(){
           query = params[0];
         }
 
-        h.get('http://api.wunderground.com/api/'+config.wunderground_api_key+'/conditions/q/FI/'+query+'.json', function(response){
+        h.get('http://api.openweathermap.org/data/2.5/weather?q='+query+'&units=metric'+'&APPID='+config.openweathermap_api_key, function(response){
           var output = '';
 
-          if (typeof response.response != "undefined" && typeof response.response.error != "undefined"){
-            output = 'Can\'t find such a place in Finland.';
-
-          } else if (typeof response.response != "undefined" && typeof response.current_observation != "undefined"){
-            var town = response.current_observation.display_location.city;
-            var temp = response.current_observation.temp_c;
+          if (typeof response.cod !== "undefined" && response.cod == 200){
+            var town = response.name;
+            var temp = response.main.temp;
             output = 'Temperature in '+town+' is '+temp+'°C';
+
+          } else if (typeof response.cod != "undefined"){
+            output = 'Can\'t find such a place.';
 
           } else {
             log('ERROR: Could not fetch data!');
