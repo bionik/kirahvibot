@@ -11,6 +11,7 @@ var config = {
 
 var http = require('http');
 var irc = require('irc');
+var io = require('socket.io');
 
 function log(obj){
   if(config.debug && console.log !== undefined) {
@@ -28,6 +29,23 @@ function log(obj){
 Bot = function(){
   'use strict';
   var h = this;
+
+  h.io = new io();
+  h.io.listen(31337);
+
+
+  h.io.on('connection', function(socket){
+    log('Socket connected');
+
+    socket.on('players', function(data) {
+      if(data === 0){
+        h.bot.say('#kirahvi.dy.fi', 'Minecraft: No players.');
+      } else {
+        h.bot.say('#kirahvi.dy.fi', 'Minecraft: '+data+' players online!');
+      }
+    });
+
+  });
 
   //Check for command and return parameters
   h.checkCommand = function(command, text){
